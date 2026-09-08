@@ -861,28 +861,43 @@ section {
 }
 .reader-body {
   font-size: 1.06rem;
-  line-height: 1.75;
+  line-height: 1.8;
   color: var(--ink);
 }
-.reader-body p { margin-bottom: 1.3em; }
+.reader-body p { margin: 0 0 1.6em; }
+.reader-body p:last-child { margin-bottom: 0; }
 .reader-body h2 {
   font-family: var(--ff-display);
   font-weight: 600;
-  font-size: 1.6rem;
-  margin: 2em 0 0.6em;
-  letter-spacing: -0.02em;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  margin: 2.4em 0 0.9em;
+  letter-spacing: -0.022em;
+  color: var(--ink);
 }
+.reader-body h2:first-child { margin-top: 0; }
 .reader-body h3 {
   font-family: var(--ff-display);
   font-weight: 600;
-  font-size: 1.25rem;
-  margin: 1.6em 0 0.5em;
+  font-size: 1.28rem;
+  line-height: 1.3;
+  margin: 2em 0 0.7em;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
-.reader-body img { border-radius: var(--radius-m); margin: 1em 0; }
+.reader-body img { border-radius: var(--radius-m); margin: 1.4em 0; max-width: 100%; }
 .reader-body a { color: var(--aqua); text-decoration: underline; text-underline-offset: 3px; }
 .reader-body strong { color: var(--ink); font-weight: 600; }
-.reader-body ul, .reader-body ol { padding-left: 22px; margin-bottom: 1.3em; }
-.reader-body li { margin-bottom: 6px; }
+.reader-body ul, .reader-body ol { padding-left: 24px; margin: 0 0 1.6em; }
+.reader-body li { margin-bottom: 10px; line-height: 1.7; }
+.reader-body li:last-child { margin-bottom: 0; }
+.reader-body blockquote {
+  border-left: 3px solid var(--aqua);
+  padding: 4px 0 4px 20px;
+  margin: 1.6em 0;
+  color: var(--ink-dim);
+  font-style: normal;
+}
 
 /* ============================================
    EBOOKS PAGE
@@ -2315,8 +2330,28 @@ async function showArticleBySlug(slug) {
     <h1>${escapeHTML(data.title)}</h1>
     <div class="reader-meta">${escapeHTML(data.author || "Rédaction Apnova")} · ${formatDate(data.created_at)}</div>
     ${heroStyle ? `<div class="reader-hero" style="${heroStyle}"></div>` : ""}
-    <div class="reader-body">${data.body}</div>
+    <div class="reader-body">${renderBody(data.body)}</div>
   `;
+}
+
+// Smart renderer : si le contenu contient déjà des balises HTML de structure, on affiche tel quel.
+// Sinon, on convertit les doubles retours à la ligne en paragraphes, les simples en <br>.
+function renderBody(raw) {
+  if (!raw) return "";
+  const hasStructure = /<(p|h[1-6]|ul|ol|blockquote|div)[\s>]/i.test(raw);
+  if (hasStructure) return raw;
+  // Texte brut : convertir en HTML structuré
+  const escaped = escapeHTML(raw);
+  const blocks = escaped.split(/\n\s*\n/).map(block => {
+    const trimmed = block.trim();
+    if (!trimmed) return "";
+    // Détection titre simple : ligne unique commençant par ## ou en Majuscules courtes
+    if (/^##\s+/.test(trimmed)) return `<h2>${trimmed.replace(/^##\s+/, "")}</h2>`;
+    if (/^###\s+/.test(trimmed)) return `<h3>${trimmed.replace(/^###\s+/, "")}</h3>`;
+    // Sinon paragraphe avec sauts de ligne simples préservés
+    return `<p>${trimmed.replace(/\n/g, "<br>")}</p>`;
+  });
+  return blocks.filter(Boolean).join("\n");
 }
 
 function formatDate(iso) {
