@@ -1410,12 +1410,167 @@ footer {
 .reveal.visible { opacity: 1; transform: none; }
 
 /* ============================================
+   MOBILE NAV (burger + drawer)
+   ============================================ */
+.nav-burger {
+  display: none;
+  background: transparent;
+  border: 1px solid rgba(12,21,33,0.12);
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  z-index: 210;
+}
+.nav-burger:hover { background: rgba(12,21,33,0.04); }
+.nav-burger span {
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  height: 2px;
+  background: #0C1521;
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.2s;
+}
+.nav-burger span:nth-child(1) { top: 15px; }
+.nav-burger span:nth-child(2) { top: 21px; }
+.nav-burger span:nth-child(3) { top: 27px; }
+.nav-burger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; }
+.nav-burger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 86%;
+  max-width: 380px;
+  background: #FFFFFF;
+  background-color: #FFFFFF;
+  z-index: 200;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  box-shadow: -20px 0 60px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.mobile-drawer.open { transform: translateX(0); }
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px;
+  border-bottom: 1px solid rgba(12,21,33,0.06);
+  background: #FFFFFF;
+  position: sticky;
+  top: 0;
+}
+.drawer-head .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #0C1521;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+.drawer-close {
+  background: rgba(12,21,33,0.06);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #0C1521;
+  padding: 0;
+  transition: background 0.2s;
+}
+.drawer-close:hover { background: rgba(12,21,33,0.1); }
+
+.drawer-nav {
+  padding: 12px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+}
+.drawer-nav a {
+  color: #0C1521;
+  text-decoration: none;
+  font-size: 1.15rem;
+  font-weight: 500;
+  padding: 18px 4px;
+  border-bottom: 1px solid rgba(12,21,33,0.06);
+  letter-spacing: -0.01em;
+  transition: color 0.2s, padding-left 0.2s;
+  text-align: left;
+}
+.drawer-nav a:last-of-type { border-bottom: none; }
+.drawer-nav a:hover, .drawer-nav a.active {
+  color: #00B39B;
+  padding-left: 8px;
+}
+
+.drawer-cta-wrap {
+  padding: 8px 24px 24px;
+  background: #FFFFFF;
+}
+.drawer-cta {
+  display: block;
+  background: #00B39B;
+  color: #FFFFFF !important;
+  border: none;
+  border-radius: 999px;
+  padding: 18px 24px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s, background 0.2s;
+  letter-spacing: -0.005em;
+}
+.drawer-cta:hover { background: #009C87; transform: translateY(-1px); }
+
+.drawer-footer {
+  margin-top: auto;
+  padding: 20px 24px 28px;
+  font-size: 0.78rem;
+  color: rgba(12,21,33,0.5);
+  background: #FFFFFF;
+  line-height: 1.5;
+}
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(12,21,33,0.5);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 900px) {
   .nav { padding: 14px 20px; }
   .nav-links { display: none; }
   .nav-burger { display: block; }
+  .nav-cta { display: none; }
   section { padding: 70px 20px; }
   .hero { padding-top: 110px; }
   .quiz-card { padding: 32px 22px; }
@@ -1434,6 +1589,29 @@ footer {
 
 @media (max-width: 560px) {
   .ebooks-grid { grid-template-columns: 1fr; }
+}
+
+/* Mobile modals : le backdrop scroll, la modale prend toute la hauteur nécessaire */
+@media (max-width: 720px) {
+  .modal-backdrop {
+    align-items: flex-start;
+    padding: 12px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal {
+    max-height: none;
+    overflow-y: visible;
+    padding: 28px 20px 40px;
+    margin: 8px 0 40px;
+    border-radius: 20px;
+  }
+  .modal h3 { font-size: 1.35rem; padding-right: 44px; }
+  .modal textarea { min-height: 160px; }
+  #postBody { min-height: 260px; }
+  .admin-topbar { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .modal-actions { flex-direction: column; }
+  .modal-actions .btn { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -1465,7 +1643,30 @@ footer {
     <a href="#/#faq">FAQ</a>
   </nav>
   <a href="#/#comparateur" class="nav-cta">Trouver mon masque</a>
+  <button class="nav-burger" id="navBurger" aria-label="Ouvrir le menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
 </header>
+
+<!-- MOBILE DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="mobile-drawer" id="mobileDrawer" aria-label="Menu mobile">
+  <div class="drawer-head">
+    <a href="#/" class="brand" data-drawer-link><span class="brand-mark"></span> Apnova</a>
+    <button class="drawer-close" id="drawerClose" aria-label="Fermer le menu">✕</button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="#/" data-route="home" data-drawer-link>Accueil</a>
+    <a href="#/#comparateur" data-drawer-link>Comparateur</a>
+    <a href="#/ebooks" data-route="ebooks" data-drawer-link>Ebooks</a>
+    <a href="#/blog" data-route="blog" data-drawer-link>Blog</a>
+    <a href="#/#faq" data-drawer-link>FAQ</a>
+  </nav>
+  <div class="drawer-cta-wrap">
+    <a href="#/#comparateur" class="drawer-cta" data-drawer-link>Trouver mon masque</a>
+  </div>
+  <div class="drawer-footer">Apnova, comparateur indépendant de masques respiratoires.</div>
+</aside>
 
 <main>
 
@@ -2120,6 +2321,7 @@ function router() {
   views.forEach(v => v.classList.toggle("active", v.dataset.view === view));
   const activeLink = document.querySelector(`.nav-links a[data-route="${view}"]`);
   if (activeLink) activeLink.classList.add("active");
+  document.querySelectorAll(`.drawer-nav a[data-route]`).forEach(a => a.classList.toggle("active", a.dataset.route === view));
 
   // Scroll top or to inline target
   setTimeout(() => {
@@ -2335,23 +2537,59 @@ async function showArticleBySlug(slug) {
 }
 
 // Smart renderer : si le contenu contient déjà des balises HTML de structure, on affiche tel quel.
-// Sinon, on convertit les doubles retours à la ligne en paragraphes, les simples en <br>.
+// Sinon, on interprète comme du Markdown simple :
+// - ## titre 2, ### titre 3
+// - lignes commençant par "- " ou "* " → liste à puces
+// - lignes commençant par "1. " → liste numérotée
+// - **texte** → gras
+// - [texte](url) → lien
+// - doubles retours à la ligne → paragraphes séparés
 function renderBody(raw) {
   if (!raw) return "";
-  const hasStructure = /<(p|h[1-6]|ul|ol|blockquote|div)[\s>]/i.test(raw);
+  const trimmed = raw.trim();
+  const hasStructure = /<(p|h[1-6]|ul|ol|blockquote|div)[\s>]/i.test(trimmed);
   if (hasStructure) return raw;
-  // Texte brut : convertir en HTML structuré
-  const escaped = escapeHTML(raw);
-  const blocks = escaped.split(/\n\s*\n/).map(block => {
-    const trimmed = block.trim();
-    if (!trimmed) return "";
-    // Détection titre simple : ligne unique commençant par ## ou en Majuscules courtes
-    if (/^##\s+/.test(trimmed)) return `<h2>${trimmed.replace(/^##\s+/, "")}</h2>`;
-    if (/^###\s+/.test(trimmed)) return `<h3>${trimmed.replace(/^###\s+/, "")}</h3>`;
-    // Sinon paragraphe avec sauts de ligne simples préservés
-    return `<p>${trimmed.replace(/\n/g, "<br>")}</p>`;
-  });
-  return blocks.filter(Boolean).join("\n");
+
+  const blocks = trimmed.split(/\n\s*\n/);
+  const html = [];
+
+  for (const block of blocks) {
+    const b = block.trim();
+    if (!b) continue;
+
+    if (/^##\s+/.test(b)) {
+      html.push(`<h2>${processInline(escapeHTML(b.replace(/^##\s+/, "")))}</h2>`);
+      continue;
+    }
+    if (/^###\s+/.test(b)) {
+      html.push(`<h3>${processInline(escapeHTML(b.replace(/^###\s+/, "")))}</h3>`);
+      continue;
+    }
+
+    const lines = b.split(/\n/);
+    if (lines.every(l => /^\s*[-*]\s+/.test(l))) {
+      const items = lines.map(l => `<li>${processInline(escapeHTML(l.replace(/^\s*[-*]\s+/, "")))}</li>`).join("");
+      html.push(`<ul>${items}</ul>`);
+      continue;
+    }
+    if (lines.every(l => /^\s*\d+\.\s+/.test(l))) {
+      const items = lines.map(l => `<li>${processInline(escapeHTML(l.replace(/^\s*\d+\.\s+/, "")))}</li>`).join("");
+      html.push(`<ol>${items}</ol>`);
+      continue;
+    }
+
+    html.push(`<p>${processInline(escapeHTML(b)).replace(/\n/g, "<br>")}</p>`);
+  }
+
+  return html.join("\n");
+}
+
+function processInline(text) {
+  // Gras **texte**
+  text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  // Lien [texte](url)
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  return text;
 }
 
 function formatDate(iso) {
@@ -2610,6 +2848,37 @@ if (!localStorage.getItem("apnova_cookies")) {
 /* ============================================
    EBOOK POPUP
    ============================================ */
+// ============================================
+// MOBILE DRAWER
+// ============================================
+const navBurger = document.getElementById("navBurger");
+const mobileDrawer = document.getElementById("mobileDrawer");
+const drawerOverlay = document.getElementById("drawerOverlay");
+
+function openDrawer() {
+  navBurger.classList.add("open");
+  mobileDrawer.classList.add("open");
+  drawerOverlay.classList.add("open");
+  navBurger.setAttribute("aria-expanded", "true");
+  document.body.style.overflow = "hidden";
+}
+function closeDrawer() {
+  navBurger.classList.remove("open");
+  mobileDrawer.classList.remove("open");
+  drawerOverlay.classList.remove("open");
+  navBurger.setAttribute("aria-expanded", "false");
+  document.body.style.overflow = "";
+}
+navBurger.addEventListener("click", () => {
+  if (mobileDrawer.classList.contains("open")) closeDrawer(); else openDrawer();
+});
+document.getElementById("drawerClose").addEventListener("click", closeDrawer);
+drawerOverlay.addEventListener("click", closeDrawer);
+document.querySelectorAll("[data-drawer-link]").forEach(link => {
+  link.addEventListener("click", () => setTimeout(closeDrawer, 100));
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+
 const ebookPopup = document.getElementById("ebookPopup");
 function openEbookPopup() { ebookPopup.classList.add("show"); }
 function closeEbookPopup() { ebookPopup.classList.remove("show"); localStorage.setItem("apnova_ebook_seen", "1"); }
